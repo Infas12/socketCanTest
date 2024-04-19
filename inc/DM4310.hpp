@@ -44,6 +44,7 @@ public:
         
         virtual void HandleNewMsg(can_frame msg);
         virtual void Update();
+        void Enable();
 
 };
 

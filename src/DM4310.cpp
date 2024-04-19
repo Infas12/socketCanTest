@@ -4,10 +4,10 @@
 
 const float DM4310::P_MIN = -12.5f;
 const float DM4310::P_MAX = 12.5f;
-const float DM4310::V_MIN = -45.0f;
-const float DM4310::V_MAX = 45.0f;
-const float DM4310::T_MIN = -18.0f;
-const float DM4310::T_MAX = 18.0f;
+const float DM4310::V_MIN = -30.0f;
+const float DM4310::V_MAX = 30.0f;
+const float DM4310::T_MIN = -10.0f;
+const float DM4310::T_MAX = 10.0f;
 
 const float DM4310::KP_MIN = 0.0f;
 const float DM4310::KP_MAX = 500.0f;
@@ -21,9 +21,26 @@ void DM4310::HandleNewMsg(can_frame msg)
     uint16_t p_int = (uint16_t)(msg.data[1] << 8 | msg.data[2]);
     uint16_t v_int = (uint16_t)(msg.data[3] << 4 | msg.data[4] >> 4);
     uint16_t tau_int = (uint16_t)((msg.data[4] & 0xF) << 8 | msg.data[5]);
-    positionFdb = Math::dm_float_to_uint(p_int,P_MIN,P_MAX,16);
-    speedFdb = Math::dm_float_to_uint(v_int,V_MIN,V_MAX,12);
-    torqueFdb = Math::dm_float_to_uint(tau_int,T_MIN,T_MAX,12);
+    positionFdb = Math::dm_uint_to_float(p_int,P_MIN,P_MAX,16);
+    speedFdb = Math::dm_uint_to_float(v_int,V_MIN,V_MAX,12);
+    torqueFdb = Math::dm_uint_to_float(tau_int,T_MIN,T_MAX,12);
+    std::cout << "Position: " << positionFdb << "Vel:" << speedFdb << std::endl;
+}
+
+void DM4310::Enable()
+{
+    can_frame frame;
+    frame.can_id = 0x01;
+    frame.can_dlc = 8;
+    frame.data[0] = 0xFF;
+    frame.data[1] = 0xFF;
+    frame.data[2] = 0xFF;
+    frame.data[3] = 0xFF;
+    frame.data[4] = 0xFF;
+    frame.data[5] = 0xFF;
+    frame.data[6] = 0xFF;
+    frame.data[7] = 0xFC;
+    CanManager::Instance()->SendMsg(frame);
 }
 
 void DM4310::Update()
@@ -60,7 +77,7 @@ void DM4310::Update()
     frame.data[7] = (uint8_t)(tau_int);
 
 
-    // CanManager::Instance()->SendMsg(frame);
+    CanManager::Instance()->SendMsg(frame);
 
 }
 
