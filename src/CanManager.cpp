@@ -86,7 +86,7 @@ void* CanManager::RxThread(void *argv)
         
         }
         
-        //control loop frequency
+        //read loop frequency
         std::this_thread::sleep_for(std::chrono::microseconds(10));
     }
 

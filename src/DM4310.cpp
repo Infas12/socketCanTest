@@ -30,7 +30,7 @@ void DM4310::HandleNewMsg(can_frame msg)
 void DM4310::Enable()
 {
     can_frame frame;
-    frame.can_id = 0x01;
+    frame.can_id = cmdId;
     frame.can_dlc = 8;
     frame.data[0] = 0xFF;
     frame.data[1] = 0xFF;
