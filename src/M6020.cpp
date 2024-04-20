@@ -21,6 +21,13 @@ void M6020::HandleNewMsg(can_frame msg)
 
 void M6020::Update()
 {
+
+    if(controlMode == MIT_MODE)
+    {
+        controlMode = RELAX_MODE; // MIT mode not implemented
+    }
+
+
     if (controlMode == POS_MODE)
     {
         pidPosition.ref = positionSet;

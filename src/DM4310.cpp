@@ -24,7 +24,6 @@ void DM4310::HandleNewMsg(can_frame msg)
     positionFdb = Math::dm_uint_to_float(p_int,P_MIN,P_MAX,16);
     speedFdb = Math::dm_uint_to_float(v_int,V_MIN,V_MAX,12);
     torqueFdb = Math::dm_uint_to_float(tau_int,T_MIN,T_MAX,12);
-    std::cout << "Position: " << positionFdb << "Vel:" << speedFdb << std::endl;
 }
 
 void DM4310::Enable()
@@ -43,6 +42,38 @@ void DM4310::Enable()
     CanManager::Instance()->SendMsg(frame);
 }
 
+void DM4310::Disable()
+{
+    can_frame frame;
+    frame.can_id = cmdId;
+    frame.can_dlc = 8;
+    frame.data[0] = 0xFF;
+    frame.data[1] = 0xFF;
+    frame.data[2] = 0xFF;
+    frame.data[3] = 0xFF;
+    frame.data[4] = 0xFF;
+    frame.data[5] = 0xFF;
+    frame.data[6] = 0xFF;
+    frame.data[7] = 0xFD;
+    CanManager::Instance()->SendMsg(frame);
+}
+
+void DM4310::SetZero()
+{
+    can_frame frame;
+    frame.can_id = cmdId;
+    frame.can_dlc = 8;
+    frame.data[0] = 0xFF;
+    frame.data[1] = 0xFF;
+    frame.data[2] = 0xFF;
+    frame.data[3] = 0xFF;
+    frame.data[4] = 0xFF;
+    frame.data[5] = 0xFF;
+    frame.data[6] = 0xFF;
+    frame.data[7] = 0xFE;
+    CanManager::Instance()->SendMsg(frame);
+}
+
 void DM4310::Update()
 {
     // apply constraints
@@ -52,7 +83,7 @@ void DM4310::Update()
     kp = Math::FloatConstrain(kp,KP_MIN,KP_MAX);
     kd = Math::FloatConstrain(kd,KD_MIN,KD_MAX);
 
-    if(controlMode!=Motor::POS_MODE){ //using POS_MODE as MIT mode, if not in POS_MODE then do nothing.
+    if(controlMode!=Motor::MIT_MODE){ //other modes not implemented
         tauff = 0.0;
         kp = 0.0;
         kd = 0.0;
@@ -75,7 +106,6 @@ void DM4310::Update()
     frame.data[5] = (uint8_t)(kd_int >> 4);
     frame.data[6] = (uint8_t)((kd_int & 0xF) << 4 | (tau_int >> 8));
     frame.data[7] = (uint8_t)(tau_int);
-
 
     CanManager::Instance()->SendMsg(frame);
 
