@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(Test)
 
 add_compile_options(-std=c++11)
-add_compile_options(-o2)
+
 add_compile_options(-march=native)
 add_compile_options(-lpthread)
 
