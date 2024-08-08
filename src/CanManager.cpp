@@ -45,6 +45,7 @@ void CanManager::SendMsg(can_frame msg)
 
 void CanManager::StartRxThread()
 {
+    TxRequestFlag = true;
     m_IsRunning = true;
     auto lambda = [](void* arg) -> void* {
         CanManager* self = static_cast<CanManager*>(arg);
@@ -52,6 +53,7 @@ void CanManager::StartRxThread()
         return nullptr;
     };
     pthread_create(&RxThreadID, nullptr, lambda, this);
+    TxRequestFlag = false;
 
 }
 
@@ -62,7 +64,6 @@ void CanManager::EndRxThread()
 
 void CanManager::RxThread()
 {
-
     while(this->IsRunning())
     {
         
