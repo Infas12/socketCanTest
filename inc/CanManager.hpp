@@ -16,39 +16,26 @@
 #include <pthread.h>
 #include <map>
 
-
-class CanMsgHandler
-{
-    private:
-        int m_id;
-    public:
-        CanMsgHandler(){};
-        void Registration(int id); 
-        virtual void HandleNewMsg(can_frame msg) = 0 ;
-};
+//forward declaration
+class CanMsgHandler; 
 
 class CanManager
 {
+
 private:
 
-    CanManager(){};
-    ~CanManager(){};
     std::string m_PortName;
     bool m_IsRunning;
 
 public:
+    CanManager(){};
+    ~CanManager(){};
     
     int SocketFD;
     std::mutex SocketMtx;
     bool TxRequestFlag;
     pthread_t RxThreadID{};
     std::map<int,CanMsgHandler*> HandlerMap;
-
-    static CanManager* Instance()
-    {
-        static CanManager instance;
-        return &instance;
-    };
     
     void SetPortName(const std::string PortName){m_PortName = PortName;};
     void Init();
@@ -60,11 +47,20 @@ public:
     //Receive, with a single thread.
     void StartRxThread();
     void EndRxThread();
-    static void* RxThread(void *arg);
+    void RxThread();
 
 };
 //written like sh*t
-
+class CanMsgHandler
+{
+    private:
+        int m_id;
+        CanManager* m_Manager;
+    public:
+        CanMsgHandler(CanManager* manager_) : m_Manager(manager_) {};
+        void Registration(int id); 
+        virtual void HandleNewMsg(can_frame msg) = 0 ;
+};
 
 
 

@@ -11,10 +11,7 @@ include_directories(inc)
 set(SRCS 
     src/CanManager.cpp
     src/Math.cpp
-    src/M2006.cpp
     src/Pid.cpp
-    src/M3508.cpp
-    src/M6020.cpp
     src/DM4310.cpp
     )
 

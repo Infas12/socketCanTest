@@ -4,24 +4,25 @@
 int main()
 {
 
-    CanManager::Instance()->SetPortName("can0");
-    CanManager::Instance()->Init();
+    CanManager testCan;
+    testCan.SetPortName("can0");
+    testCan.Init();
 
-    DM4310 testMotor1;
+    DM4310 testMotor1(&testCan);
     testMotor1.Registration(0x07,0x06);
-    testMotor1.Disable();
+    testMotor1.Enable();
     testMotor1.controlMode = Motor::MIT_MODE;
     testMotor1.SetZero();
 
-    DM4310 testMotor2;
+    DM4310 testMotor2(&testCan);
     testMotor2.Registration(0x09,0x08);
-    testMotor2.Disable();
+    testMotor2.Enable();
     testMotor2.controlMode = Motor::MIT_MODE;
     testMotor2.SetZero();
 
-    DM4310 testMotor3;
+    DM4310 testMotor3(&testCan);
     testMotor3.Registration(0x0B,0x0A);
-    testMotor3.Disable();
+    testMotor3.Enable();
     testMotor3.controlMode = Motor::MIT_MODE;
     testMotor3.SetZero();
 

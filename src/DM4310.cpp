@@ -39,7 +39,7 @@ void DM4310::Enable()
     frame.data[5] = 0xFF;
     frame.data[6] = 0xFF;
     frame.data[7] = 0xFC;
-    CanManager::Instance()->SendMsg(frame);
+    m_Manager->SendMsg(frame);
 }
 
 void DM4310::Disable()
@@ -55,7 +55,7 @@ void DM4310::Disable()
     frame.data[5] = 0xFF;
     frame.data[6] = 0xFF;
     frame.data[7] = 0xFD;
-    CanManager::Instance()->SendMsg(frame);
+    m_Manager->SendMsg(frame);
 }
 
 void DM4310::SetZero()
@@ -71,7 +71,7 @@ void DM4310::SetZero()
     frame.data[5] = 0xFF;
     frame.data[6] = 0xFF;
     frame.data[7] = 0xFE;
-    CanManager::Instance()->SendMsg(frame);
+    m_Manager->SendMsg(frame);
 }
 
 void DM4310::Update()
@@ -107,7 +107,7 @@ void DM4310::Update()
     frame.data[6] = (uint8_t)((kd_int & 0xF) << 4 | (tau_int >> 8));
     frame.data[7] = (uint8_t)(tau_int);
 
-    CanManager::Instance()->SendMsg(frame);
+    m_Manager->SendMsg(frame);
 
 }
 

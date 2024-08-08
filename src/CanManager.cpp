@@ -2,7 +2,7 @@
 
 void CanMsgHandler::Registration(int id)
 {
-    CanManager::Instance()->HandlerMap.insert(std::make_pair(id,this));
+    m_Manager->HandlerMap.insert(std::make_pair(id,this));
 }
 
 void CanMsgHandler::HandleNewMsg(can_frame msg)
@@ -46,7 +46,13 @@ void CanManager::SendMsg(can_frame msg)
 void CanManager::StartRxThread()
 {
     m_IsRunning = true;
-    pthread_create(&RxThreadID,nullptr,&CanManager::RxThread,nullptr);
+    auto lambda = [](void* arg) -> void* {
+        CanManager* self = static_cast<CanManager*>(arg);
+        self->RxThread();
+        return nullptr;
+    };
+    pthread_create(&RxThreadID, nullptr, lambda, this);
+
 }
 
 void CanManager::EndRxThread()
@@ -54,20 +60,20 @@ void CanManager::EndRxThread()
     m_IsRunning = false;
 }
 
-void* CanManager::RxThread(void *argv)
+void CanManager::RxThread()
 {
 
-    while(CanManager::Instance()->IsRunning())
+    while(this->IsRunning())
     {
         
         //TODO: Use `select()` instead, non-block reading required here.
-        while(Instance() -> TxRequestFlag){;}
+        while(TxRequestFlag){;}
         
         //Read Frame
         struct can_frame frame;
-        Instance() -> SocketMtx.lock();
-        int nbytes = read(Instance() -> SocketFD, &frame, sizeof(struct can_frame));
-        Instance() -> SocketMtx.unlock();
+        SocketMtx.lock();
+        int nbytes = read(SocketFD, &frame, sizeof(struct can_frame));
+        SocketMtx.unlock();
         
         //Distribute Msgs
         if (nbytes < 0) {
@@ -75,8 +81,8 @@ void* CanManager::RxThread(void *argv)
             exit(1);
 		}else{
             //Written like shit; Gonna Fix this
-            auto iter = Instance()->HandlerMap.find(frame.can_id);
-            if(iter==Instance()->HandlerMap.end()) //Handler not found
+            auto iter = HandlerMap.find(frame.can_id);
+            if(iter == HandlerMap.end()) //Handler not found
             {
                 std::cerr << "Handler for Can ID " << frame.can_id  << " does not exist" << std::endl;
                 exit(1);

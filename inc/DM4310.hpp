@@ -8,6 +8,9 @@ class DM4310 : public CanMsgHandler, public Motor
 {
 private:
         
+        //Can manager
+        CanManager* m_Manager;
+
         //attribute
         uint32_t cmdId;
         uint32_t fdbId;
@@ -30,10 +33,11 @@ public:
         float torqueFdb;
         float kp;
         float kd;
+        
 
         MotorControlModeType controlMode = Motor::RELAX_MODE;
 
-        DM4310() : CanMsgHandler() , Motor(), cmdId(0), fdbId(0), kp(KP_MIN), kd(KD_MIN), tauff(0.0)
+        DM4310(CanManager* manager_) : CanMsgHandler(manager_) , Motor(), cmdId(0), fdbId(0), kp(KP_MIN), kd(KD_MIN), tauff(0.0), m_Manager(manager_)
         {};
 
         void Registration(int cmdId, int fdbId){
